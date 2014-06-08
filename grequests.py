@@ -113,10 +113,11 @@ def map(requests, stream=False, size=None):
     return [r.response for r in requests]
 
 
-def imap(requests, stream=False, size=2):
+def imap(session, requests, stream=False, size=2):
     """Concurrently converts a generator object of Requests to
     a generator of Responses.
 
+    :param session: the Session object
     :param requests: a generator of Request objects.
     :param stream: If True, the content will not be downloaded immediately.
     :param size: Specifies the number of requests to make at a time. default is 2
@@ -125,7 +126,7 @@ def imap(requests, stream=False, size=2):
     pool = Pool(size)
 
     def send(r):
-        return r.send(stream=stream)
+        return session.send(r, stream=stream)
 
     for r in pool.imap_unordered(send, requests):
         yield r
